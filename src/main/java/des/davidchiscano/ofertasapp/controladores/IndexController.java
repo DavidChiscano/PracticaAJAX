@@ -44,7 +44,7 @@ public class IndexController {
 	}
 	@ResponseBody
 	@GetMapping("/oferta/oferta{id}")
-	public Optional<Oferta> getPerfil(Model modelo, @PathVariable long id) {
+	public Optional<Oferta> getPerfil(@PathVariable long id) {
 		return ofertaModelo.buscarId(id);
 	}	
 	@GetMapping("/cerrarSesion")

@@ -5,10 +5,10 @@ import java.util.Optional;
 
 import des.davidchiscano.ofertasapp.entidades.Oferta;
 
-public interface OfertaDao {
+public interface OfertaDao extends DaoGenerico<Oferta>{
 	List<Oferta> getOfertas();
-	int crearOferta(Oferta o);
-	long borrarOferta(long id);
+	//Oferta crearOferta(Oferta o);
+	//long borrarOferta(long id);
 	Optional<Oferta>buscarId(long id); 
 	List<Oferta> buscarOferta(String busqueda);
 	List<Oferta> filtrarOferta(String prioridad);

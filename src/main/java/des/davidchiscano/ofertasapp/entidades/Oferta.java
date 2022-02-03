@@ -1,17 +1,32 @@
 package des.davidchiscano.ofertasapp.entidades;
 
 import java.io.Serializable;
-import java.time.LocalDate;
-import java.util.Date;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+@Entity
+@Table(name = "oferta")
 public class Oferta implements Serializable {
 	//Atributos
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "id")
 	private long id;
+	@Column(name = "nombre")
 	private String nombre;
+	@Column(name = "fecha")
 	private String fecha;
+	@Column(name = "prioridad")
 	private String prioridad;
+	@Column(name = "hiperenlace")
 	private String hiperenlace;
+	@Column(name = "descripcion")
 	private String descripcion;
+	@Column(name = "precio")
 	private double precio;
 	
 	//CONSTRUCTORES
@@ -36,6 +51,12 @@ public class Oferta implements Serializable {
 		this.nombre = nombre;
 		this.precio = precio;
 		this.prioridad = prioridad;
+	}
+	public Oferta(String nombre, String prioridad, String hiperenlace, String descripcion) {
+		this.nombre = nombre;
+		this.prioridad = prioridad;
+		this.hiperenlace = hiperenlace;
+		this.descripcion = descripcion;
 	}
 
 	//GETTERS && SETTERS

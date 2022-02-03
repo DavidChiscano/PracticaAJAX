@@ -1,63 +1,63 @@
 package des.davidchiscano.ofertasapp.controladores;
 
-import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import des.davidchiscano.ofertasapp.entidades.Oferta;
 import des.davidchiscano.ofertasapp.modelo.OfertaDao;
+import des.davidchiscano.ofertasapp.servicios.OfertaServicio;
 
 @Controller
 public class OfertaController {
 	@Autowired
-	private OfertaDao ofertaModelo;
+	OfertaServicio ofertaServicio;
+	@Autowired
+	OfertaDao ofertaDao;
 	
 	
-	@GetMapping("/crearOferta")
-	public String getCrearOferta() {
-		return "/index";
-	}
-
+//	@ResponseBody
+//	@GetMapping("/crearOferta")
+//	public String getCrearOferta() {
+//		return "/index";
+//	}
+	
+	@ResponseBody
 	@PostMapping("/crearOferta")
-	public String postCrearOferta(@RequestParam String nombre,@RequestParam String prioridad,@RequestParam String hiperenlace,@RequestParam String descripcion,@RequestParam double precio) {
-		Oferta oferta = new Oferta();
-		LocalDate fecha = LocalDate.now();
-		oferta.setNombre(nombre);
-		oferta.setFecha(fecha.toString());
-		oferta.setPrioridad(prioridad);
-		oferta.setHiperenlace(hiperenlace);
-		oferta.setDescripcion(descripcion);
-		oferta.setPrecio(precio);
-		ofertaModelo.crearOferta(oferta);
-		return "redirect:/";
+	public ResponseEntity<Object> postCrearOferta(Map<String, String> json) {
+		Oferta oferta = ofertaServicio.crearOferta(new Oferta(json.get("nombre"),json.get("prioridad"),json.get("hiperenlace"),json.get("descripcion")));
+		return new ResponseEntity<Object>(oferta, HttpStatus.OK);
 	}
 	
 	@GetMapping("/buscarOferta")
 	public String getBuscarProducto(Model modelo, @RequestParam String busqueda) {
-		List<Oferta> ListaOfertas = ofertaModelo.buscarOferta(busqueda);
+		List<Oferta> ListaOfertas = ofertaDao.buscarOferta(busqueda);
 		modelo.addAttribute("ListaBusqueda", (ListaOfertas));
 		return "index";
 	}
 	
 	@GetMapping("/borrar/{id}")
 	public String getBorrarIdProducto(@PathVariable long id) {
-		ofertaModelo.borrarOferta(id);
+		ofertaDao.borrar(ofertaDao);
 		return "redirect:/";
 	}
-	
+	@ResponseBody
 	@GetMapping("/filtrarPrio")
-	public String filtrarPrio(Model modelo, @RequestParam String optionsRadios) {
+	public List<Oferta> filtrarPrio(@RequestParam String optionsRadios) {
 // 		List<Oferta> ListaOfertas = ofertaModelo.filtrarOferta(optionsRadios);
 //     	modelo.addAttribute("ListaBusqueda", (ListaOfertas));
-		ofertaModelo.filtrarOferta(optionsRadios);
-		return "index";
+//		ofertaModelo.filtrarOferta(optionsRadios);
+		return ofertaDao.filtrarOferta(optionsRadios);
 	}
 	
 }
