@@ -2,8 +2,8 @@ window.onload = inicio;
 
 function inicio() {
 	mostrarOfertas();
-	$("#Enviar").click(crearOferta());
-	//$("#filtrarPorPrioridad").click(filtrarOferta());
+	$("#Enviar").click(crearOferta);
+	$("#filtrarPorPrioridad").click(filtrarOferta);
 }
 
 //Borrar Ofertas
@@ -78,9 +78,9 @@ $(document).on("click", "#info", function mostrarInfo() {
 			let modal = document.getElementsByClassName("modal-body")[0];
 			modal.replaceChildren();
 			let p1 = document.createElement('p');
-			p1.textContent = oferta.id;
+			p1.textContent = "ID: " + oferta.id;
 			let p2 = document.createElement('p');
-			p2.textContent = oferta.nombre;
+			p2.textContent = "Nombre: " + oferta.nombre;
 			modal.appendChild(p1);
 			modal.appendChild(p2);
 		})
@@ -89,43 +89,82 @@ $(document).on("click", "#info", function mostrarInfo() {
 
 //Filtrar Ofertas
 function filtrarOferta() {
-	if ($("#prioridadMedia").is(':checked')) {
+	if ($("#prioridadMedia").is(':checked') || $("#prioridadAlta").is(':checked') || $("#prioridadBaja").is(':checked')) {
+	
 		fetch('/filtrarPrio', {
 			headers: {
 				'Content-type': 'application/json'
 			},
 			method: 'POST',
-			body: JSON.stringify({ nombre: $('#inputNombre').val(), email: $('#inputPrecio').val() })
+			body: JSON.stringify({ prioridad: $("#prioForm input[type='radio']:checked").val() })
+
 		})
-			.then(function(response) {
-				if (response.ok) {
-					console.log("asdasdasds");
-				} else {
-					throw "El email ya existe";
+			.then(res => res.json())
+			.then(ofertas => {
+				let listaOfertas = document.getElementById("listaOfertas");
+				listaOfertas.replaceChildren();
+				for (let oferta of ofertas) {
+					let tr = document.createElement("tr");
+					let tdId = document.createElement("td");
+					tdId.textContent = oferta.id;
+					let tdNombre = document.createElement("td");
+					tdNombre.textContent = oferta.nombre;
+					let tdPrecio = document.createElement("td");
+					tdPrecio.textContent = oferta.precio;
+
+					let tdInfo = document.createElement("td");
+					let tdBorrar = document.createElement("td");
+
+					if (oferta.prioridad == "Baja") {
+						tr.setAttribute("class", "table-active");
+					} else if (oferta.prioridad == "Media") {
+						tr.setAttribute("class", "table-warning");
+					} else if (oferta.prioridad == "Alta") {
+						tr.setAttribute("class", "table-danger");
+					}
+
+					let btnInfo = document.createElement("input");
+					btnInfo.setAttribute("type", "button");
+					btnInfo.setAttribute("class", "btn btn-info");
+					btnInfo.setAttribute("id", "info");
+					btnInfo.setAttribute("value", "Info");
+
+					let btnBorrar = document.createElement("input");
+					btnBorrar.setAttribute("type", "button");
+					btnBorrar.setAttribute("class", "btn btn-danger");
+					btnBorrar.setAttribute("id", "borrar");
+					btnBorrar.setAttribute("value", "Borrar");
+
+					tr.appendChild(tdId);
+					tr.appendChild(tdNombre);
+					tr.appendChild(tdPrecio);
+					tdInfo.appendChild(btnInfo);
+					tdBorrar.appendChild(btnBorrar);
+					tr.appendChild(tdInfo);
+					tr.appendChild(tdBorrar);
+					listaOfertas.appendChild(tr);
 				}
 			})
 	}
 }
 
+
 //Crear ofertas
 function crearOferta() {
-	let errorDiv = document.getElementById("errorDiv");
-	errorDiv.replaceChildren();
 	if ($('#inputNombre').val() != "" && $('#selectProducto').val() != "" && $('#inputPrecio').val() != "" && $('#hiperenlace').val() != "" && $('#inputDescripcion').val() != "") {
 		fetch('/crearOferta', {
 			headers: {
 				'Content-type': 'application/json'
 			},
 			method: 'POST',
-			body: JSON.stringify({ id: $('id').val(),nombre: $('nombre').val(), prioridad: $('#selectProducto').val(), hiperenlace: $('#hiperenlace'), descripcion: $('#inputDescripcion'), precio: $('#inputPrecio') })
+			body: JSON.stringify({ id: $('id').val(), nombre: $('#inputNombre').val(), prioridad: $('#selectProducto').val(), hiperenlace: $('#hiperenlace'), descripcion: $('#inputDescripcion'), precio: $('#inputPrecio') })
 		})
 			.then(function(response) {
 				if (response.ok) {
-					return response.json()			
+					return response.json()
 				} else {
-					throw "El producto ya existe";
+					throw "Error";
 				}
-
 			}).then(oferta => {
 				let listaOfertas = document.getElementById("listaOfertas");
 				let tr = document.createElement("tr");
@@ -136,6 +175,7 @@ function crearOferta() {
 				tdNombre.textContent = oferta.nombre;
 				let tdPrecio = document.createElement("td");
 				tdPrecio.textContent = oferta.precio;
+
 				let tdInfo = document.createElement("td");
 				let tdBorrar = document.createElement("td");
 
@@ -167,27 +207,7 @@ function crearOferta() {
 				tr.appendChild(tdInfo);
 				tr.appendChild(tdBorrar);
 				listaOfertas.appendChild(tr);
-		})
-			
-			
-			.catch(function(messsageDeError) {
-				let errorDiv = document.getElementById("errorDiv");
-				let div = document.createElement('div');
-				div.classList.add("alert", "alert-dismissible", "alert-danger");
-				let button = document.createElement('button');
-				button.classList.add("btn-close");
-				button.setAttribute("data-bs-dismiss", "alert");
-				let link = document.createElement('a');
-				link.classList.add("alert-link");
-				link.setAttribute("href", "#");
-				var linkText = document.createTextNode(messsageDeError);
-				link.appendChild(linkText);
-				div.appendChild(button);
-				div.appendChild(link);
-				var textNode = document.createTextNode("Prueba con otro");
-				div.appendChild(textNode);
-				errorDiv.appendChild(div);
-			});
+			})
 	}
 }
 

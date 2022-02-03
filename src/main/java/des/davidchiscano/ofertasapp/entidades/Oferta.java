@@ -52,11 +52,12 @@ public class Oferta implements Serializable {
 		this.precio = precio;
 		this.prioridad = prioridad;
 	}
-	public Oferta(String nombre, String prioridad, String hiperenlace, String descripcion) {
+	public Oferta(String nombre, String prioridad, String hiperenlace, String descripcion, double precio) {
 		this.nombre = nombre;
 		this.prioridad = prioridad;
 		this.hiperenlace = hiperenlace;
 		this.descripcion = descripcion;
+		this.precio = precio;
 	}
 
 	//GETTERS && SETTERS

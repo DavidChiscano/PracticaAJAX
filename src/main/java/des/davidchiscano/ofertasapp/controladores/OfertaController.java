@@ -24,40 +24,36 @@ public class OfertaController {
 	OfertaServicio ofertaServicio;
 	@Autowired
 	OfertaDao ofertaDao;
-	
-	
-//	@ResponseBody
-//	@GetMapping("/crearOferta")
-//	public String getCrearOferta() {
-//		return "/index";
-//	}
-	
-	@ResponseBody
+
+
 	@PostMapping("/crearOferta")
-	public ResponseEntity<Object> postCrearOferta(Map<String, String> json) {
-		Oferta oferta = ofertaServicio.crearOferta(new Oferta(json.get("nombre"),json.get("prioridad"),json.get("hiperenlace"),json.get("descripcion")));
-		return new ResponseEntity<Object>(oferta, HttpStatus.OK);
+	public String postCrearOferta(@RequestParam Map<String, String> json) {
+		Oferta oferta = ofertaServicio.crearOferta(new Oferta(json.get("nombre"), json.get("prioridad"),
+		json.get("hiperenlace"), json.get("descripcion"), Double.parseDouble(json.get("precio"))));
+		ResponseEntity<Object> ofert = new ResponseEntity<Object>(oferta, HttpStatus.OK);
+		return "redirect:/";
 	}
-	
+
 	@GetMapping("/buscarOferta")
 	public String getBuscarProducto(Model modelo, @RequestParam String busqueda) {
 		List<Oferta> ListaOfertas = ofertaDao.buscarOferta(busqueda);
 		modelo.addAttribute("ListaBusqueda", (ListaOfertas));
 		return "index";
 	}
-	
+
 	@GetMapping("/borrar/{id}")
 	public String getBorrarIdProducto(@PathVariable long id) {
-		ofertaDao.borrar(ofertaDao);
+		ofertaDao.borrar(id);
 		return "redirect:/";
 	}
-	@ResponseBody
+
 	@GetMapping("/filtrarPrio")
-	public List<Oferta> filtrarPrio(@RequestParam String optionsRadios) {
-// 		List<Oferta> ListaOfertas = ofertaModelo.filtrarOferta(optionsRadios);
+	public String filtrarPrio(@RequestParam String optionsRadios) {
+// 		List<Oferta> ListaOfertas = ofertaDao.filtrarOferta(optionsRadios);
 //     	modelo.addAttribute("ListaBusqueda", (ListaOfertas));
-//		ofertaModelo.filtrarOferta(optionsRadios);
-		return ofertaDao.filtrarOferta(optionsRadios);
+		ofertaDao.filtrarOferta(optionsRadios);
+		return "index";
 	}
-	
+
+
 }

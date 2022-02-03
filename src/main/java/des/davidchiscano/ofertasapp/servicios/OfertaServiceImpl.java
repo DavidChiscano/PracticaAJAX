@@ -3,6 +3,8 @@ package des.davidchiscano.ofertasapp.servicios;
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Service;
 
 import des.davidchiscano.ofertasapp.entidades.Oferta;

@@ -14,22 +14,12 @@ public class OfertaDaoImpl extends DaoGenericoImpl<Oferta> implements OfertaDao{
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
 	
-//	@Override
-//	public int crearOferta(Oferta o) {
-//		return jdbcTemplate.update("INSERT INTO Oferta(nombre, fecha, prioridad, hiperenlace, descripcion,precio) values(?,?,?,?,?,?)", 
-//				o.getNombre(), o.getFecha(), o.getPrioridad(), o.getHiperenlace(), o.getDescripcion(), o.getPrecio()); 
-//	}
-
 	@Override
 	public List<Oferta> getOfertas() {
 		return jdbcTemplate.query("select * from oferta",
 				(rs, rowNum) -> new Oferta(rs.getLong("id"), rs.getString("nombre"), rs.getString("fecha"),rs.getString("prioridad"),rs.getString("hiperenlace"),rs.getString("descripcion"), rs.getDouble("precio")));
 	}
 
-//	@Override
-//	public long borrarOferta(long id) {
-//		return jdbcTemplate.update("delete from Oferta where id = ?", id);
-//	}
 
 	@SuppressWarnings("deprecation")
 	@Override
