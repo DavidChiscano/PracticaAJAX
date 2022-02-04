@@ -11,6 +11,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -27,7 +28,7 @@ public class OfertaController {
 
 
 	@PostMapping("/crearOferta")
-	public String postCrearOferta(@RequestParam Map<String, String> json) {
+	public String postCrearOferta(@RequestBody Map<String, String> json) {
 		Oferta oferta = ofertaServicio.crearOferta(new Oferta(json.get("nombre"), json.get("prioridad"),
 		json.get("hiperenlace"), json.get("descripcion"), Double.parseDouble(json.get("precio"))));
 		ResponseEntity<Object> ofert = new ResponseEntity<Object>(oferta, HttpStatus.OK);
@@ -46,13 +47,11 @@ public class OfertaController {
 		ofertaDao.borrar(id);
 		return "redirect:/";
 	}
-
-	@GetMapping("/filtrarPrio")
-	public String filtrarPrio(@RequestParam String optionsRadios) {
-// 		List<Oferta> ListaOfertas = ofertaDao.filtrarOferta(optionsRadios);
-//     	modelo.addAttribute("ListaBusqueda", (ListaOfertas));
-		ofertaDao.filtrarOferta(optionsRadios);
-		return "index";
+	@ResponseBody
+	@PostMapping("/filtrar")
+	public List<Oferta> filtrarPrio(@RequestBody Map<String, String> json) {
+		
+		return ofertaDao.filtrarOferta(json.get("prioridad"));
 	}
 
 

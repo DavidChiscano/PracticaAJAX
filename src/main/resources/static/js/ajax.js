@@ -15,51 +15,67 @@ $(document).on("click", "#borrar", function() {
 	$(this).closest("tr").remove();
 });
 
+
+function addOfertaTabla(id, nombre, precio) {
+	let listaOfertas = document.getElementById("listaOfertas");
+	let tr = document.createElement("tr");
+
+	let tdId = document.createElement("td");
+	tdId.textContent = id;
+	let tdNombre = document.createElement("td");
+	tdNombre.textContent = nombre;
+	let tdPrecio = document.createElement("td");
+	tdPrecio.textContent = precio;
+
+	let tdInfo = document.createElement("td");
+	let tdBorrar = document.createElement("td");
+
+	let btnInfo = document.createElement("input");
+	btnInfo.setAttribute("type", "button");
+	btnInfo.setAttribute("class", "btn btn-info");
+	btnInfo.setAttribute("id", "info");
+	btnInfo.setAttribute("value", "Info");
+
+	let btnBorrar = document.createElement("input");
+	btnBorrar.setAttribute("type", "button");
+	btnBorrar.setAttribute("class", "btn btn-danger");
+	btnBorrar.setAttribute("id", "borrar");
+	btnBorrar.setAttribute("value", "Borrar");
+
+	tr.appendChild(tdId);
+	tr.appendChild(tdNombre);
+	tr.appendChild(tdPrecio);
+	tdInfo.appendChild(btnInfo);
+	tdBorrar.appendChild(btnBorrar);
+	tr.appendChild(tdInfo);
+	tr.appendChild(tdBorrar);
+	listaOfertas.appendChild(tr);
+}
+
+
 function mostrarOfertas() {
+	let listaOfertas = document.getElementById("listaOfertas");
+	listaOfertas.replaceChildren();
 	fetch('/ofertas', { headers: { "Content-Type": "application/json; charset=utf-8" } })
 		.then(res => res.json()) // parse response as JSON (can be res.text() for pl n response)
-		.then(response => {
-			for (let oferta of response) {
-				let listaOfertas = document.getElementById("listaOfertas");
-				let tr = document.createElement("tr");
-
-				let tdId = document.createElement("td");
-				tdId.textContent = oferta.id;
-				let tdNombre = document.createElement("td");
-				tdNombre.textContent = oferta.nombre;
-				let tdPrecio = document.createElement("td");
-				tdPrecio.textContent = oferta.precio;
-				let tdInfo = document.createElement("td");
-				let tdBorrar = document.createElement("td");
+		.then(ofertas => {
+			for (let oferta of ofertas) {
 
 				if (oferta.prioridad == "Baja") {
-					tr.setAttribute("class", "table-active");
+
+					$("tr").addClass("table-active");
+
 				} else if (oferta.prioridad == "Media") {
-					tr.setAttribute("class", "table-warning");
+
+					$("tr").addClass("table-warning");
+
 				} else if (oferta.prioridad == "Alta") {
-					tr.setAttribute("class", "table-danger");
+
+					$("tr").addClass("table-danger");
 				}
+	
+				addOfertaTabla(oferta.id, oferta.nombre, oferta.precio);
 
-				let btnInfo = document.createElement("input");
-				btnInfo.setAttribute("type", "button");
-				btnInfo.setAttribute("class", "btn btn-info");
-				btnInfo.setAttribute("id", "info");
-				btnInfo.setAttribute("value", "Info");
-
-				let btnBorrar = document.createElement("input");
-				btnBorrar.setAttribute("type", "button");
-				btnBorrar.setAttribute("class", "btn btn-danger");
-				btnBorrar.setAttribute("id", "borrar");
-				btnBorrar.setAttribute("value", "Borrar");
-
-				tr.appendChild(tdId);
-				tr.appendChild(tdNombre);
-				tr.appendChild(tdPrecio);
-				tdInfo.appendChild(btnInfo);
-				tdBorrar.appendChild(btnBorrar);
-				tr.appendChild(tdInfo);
-				tr.appendChild(tdBorrar);
-				listaOfertas.appendChild(tr);
 			}
 		})
 }
@@ -88,10 +104,10 @@ $(document).on("click", "#info", function mostrarInfo() {
 );
 
 //Filtrar Ofertas
-function filtrarOferta() {
+function filtrarOferta(e) {
+	e.preventDefault();
 	if ($("#prioridadMedia").is(':checked') || $("#prioridadAlta").is(':checked') || $("#prioridadBaja").is(':checked')) {
-	
-		fetch('/filtrarPrio', {
+		fetch('/filtrar', {
 			headers: {
 				'Content-type': 'application/json'
 			},
@@ -104,45 +120,14 @@ function filtrarOferta() {
 				let listaOfertas = document.getElementById("listaOfertas");
 				listaOfertas.replaceChildren();
 				for (let oferta of ofertas) {
-					let tr = document.createElement("tr");
-					let tdId = document.createElement("td");
-					tdId.textContent = oferta.id;
-					let tdNombre = document.createElement("td");
-					tdNombre.textContent = oferta.nombre;
-					let tdPrecio = document.createElement("td");
-					tdPrecio.textContent = oferta.precio;
-
-					let tdInfo = document.createElement("td");
-					let tdBorrar = document.createElement("td");
-
 					if (oferta.prioridad == "Baja") {
-						tr.setAttribute("class", "table-active");
+						$("tr").toggleClass("table-active");
 					} else if (oferta.prioridad == "Media") {
-						tr.setAttribute("class", "table-warning");
+						$("tr").toggleClass("table-warning");
 					} else if (oferta.prioridad == "Alta") {
-						tr.setAttribute("class", "table-danger");
+						$("tr").toggleClass("table-danger");
 					}
-
-					let btnInfo = document.createElement("input");
-					btnInfo.setAttribute("type", "button");
-					btnInfo.setAttribute("class", "btn btn-info");
-					btnInfo.setAttribute("id", "info");
-					btnInfo.setAttribute("value", "Info");
-
-					let btnBorrar = document.createElement("input");
-					btnBorrar.setAttribute("type", "button");
-					btnBorrar.setAttribute("class", "btn btn-danger");
-					btnBorrar.setAttribute("id", "borrar");
-					btnBorrar.setAttribute("value", "Borrar");
-
-					tr.appendChild(tdId);
-					tr.appendChild(tdNombre);
-					tr.appendChild(tdPrecio);
-					tdInfo.appendChild(btnInfo);
-					tdBorrar.appendChild(btnBorrar);
-					tr.appendChild(tdInfo);
-					tr.appendChild(tdBorrar);
-					listaOfertas.appendChild(tr);
+					addOfertaTabla(oferta.id, oferta.nombre, oferta.precio);
 				}
 			})
 	}
@@ -150,14 +135,15 @@ function filtrarOferta() {
 
 
 //Crear ofertas
-function crearOferta() {
+function crearOferta(e) {
+	e.preventDefault();
 	if ($('#inputNombre').val() != "" && $('#selectProducto').val() != "" && $('#inputPrecio').val() != "" && $('#hiperenlace').val() != "" && $('#inputDescripcion').val() != "") {
 		fetch('/crearOferta', {
 			headers: {
 				'Content-type': 'application/json'
 			},
 			method: 'POST',
-			body: JSON.stringify({ id: $('id').val(), nombre: $('#inputNombre').val(), prioridad: $('#selectProducto').val(), hiperenlace: $('#hiperenlace'), descripcion: $('#inputDescripcion'), precio: $('#inputPrecio') })
+			body: JSON.stringify({ id: $('id').val(), nombre: $('#inputNombre').val(), prioridad: $('#selectProducto').val(), hiperenlace: $('#hiperenlace').val(), descripcion: $('#inputDescripcion').val(), precio: $('#inputPrecio').val() })
 		})
 			.then(function(response) {
 				if (response.ok) {
@@ -165,48 +151,17 @@ function crearOferta() {
 				} else {
 					throw "Error";
 				}
-			}).then(oferta => {
-				let listaOfertas = document.getElementById("listaOfertas");
-				let tr = document.createElement("tr");
-
-				let tdId = document.createElement("td");
-				tdId.textContent = oferta.id;
-				let tdNombre = document.createElement("td");
-				tdNombre.textContent = oferta.nombre;
-				let tdPrecio = document.createElement("td");
-				tdPrecio.textContent = oferta.precio;
-
-				let tdInfo = document.createElement("td");
-				let tdBorrar = document.createElement("td");
-
-				if (oferta.prioridad == "Baja") {
-					tr.setAttribute("class", "table-active");
-				} else if (oferta.prioridad == "Media") {
-					tr.setAttribute("class", "table-warning");
-				} else if (oferta.prioridad == "Alta") {
-					tr.setAttribute("class", "table-danger");
+			}).then(ofertas => {
+				for (let oferta of ofertas) {
+					if (oferta.prioridad == "Baja") {
+						$("tr").addClass("table-active");
+					} else if (oferta.prioridad == "Media") {
+						$("tr").addClass("table-warning");
+					} else if (oferta.prioridad == "Alta") {
+						$("tr").addClass("table-danger");
+					}
+					addOfertaTabla(oferta.id, oferta.nombre, oferta.precio);
 				}
-
-				let btnInfo = document.createElement("input");
-				btnInfo.setAttribute("type", "button");
-				btnInfo.setAttribute("class", "btn btn-info");
-				btnInfo.setAttribute("id", "info");
-				btnInfo.setAttribute("value", "Info");
-
-				let btnBorrar = document.createElement("input");
-				btnBorrar.setAttribute("type", "button");
-				btnBorrar.setAttribute("class", "btn btn-danger");
-				btnBorrar.setAttribute("id", "borrar");
-				btnBorrar.setAttribute("value", "Borrar");
-
-				tr.appendChild(tdId);
-				tr.appendChild(tdNombre);
-				tr.appendChild(tdPrecio);
-				tdInfo.appendChild(btnInfo);
-				tdBorrar.appendChild(btnBorrar);
-				tr.appendChild(tdInfo);
-				tr.appendChild(tdBorrar);
-				listaOfertas.appendChild(tr);
 			})
 	}
 }
