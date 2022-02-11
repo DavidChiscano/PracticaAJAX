@@ -45,6 +45,11 @@ public class Oferta implements Serializable {
 	public Oferta() {
 		super();
 	}
+	
+	public Oferta(String nombre, String prioridad) {
+		this.nombre = nombre;
+		this.prioridad = prioridad;
+	}
 
 	public Oferta(long id, String nombre, double precio, String prioridad) {
 		this.id = id;

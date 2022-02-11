@@ -48,5 +48,4 @@ public class OfertaDaoImpl extends DaoGenericoImpl<Oferta> implements OfertaDao{
 
 
 
-
 }

@@ -26,4 +26,21 @@ public class OfertaServiceImpl implements OfertaServicio {
 		ofertaDao.borrar(id);
 	}
 
+	@Override
+	public Oferta editarOferta(Oferta o, long id) {
+		Oferta buscarOfertaID = (Oferta) ofertaDao.buscar(id);
+		if (buscarOfertaID != null) {
+
+			buscarOfertaID.setNombre(o.getNombre());
+			buscarOfertaID.setPrioridad(o.getPrioridad());
+
+			Oferta ofertaEditada = (Oferta) ofertaDao.actualizar(buscarOfertaID);
+
+			return ofertaEditada;
+		}
+		return null;
+	}
+
+	
+
 }

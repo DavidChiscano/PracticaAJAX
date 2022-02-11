@@ -26,13 +26,21 @@ public class OfertaController {
 	@Autowired
 	OfertaDao ofertaDao;
 
-
+	@ResponseBody
 	@PostMapping("/crearOferta")
-	public String postCrearOferta(@RequestBody Map<String, String> json) {
+	public ResponseEntity postCrearOferta(@RequestBody Map<String, String> json) {
 		Oferta oferta = ofertaServicio.crearOferta(new Oferta(json.get("nombre"), json.get("prioridad"),
 		json.get("hiperenlace"), json.get("descripcion"), Double.parseDouble(json.get("precio"))));
 		ResponseEntity<Object> ofert = new ResponseEntity<Object>(oferta, HttpStatus.OK);
-		return "redirect:/";
+		return ofert;
+	}
+	
+	@ResponseBody
+	@PostMapping("/oferta/oferta{id}")
+	public ResponseEntity postEditarOferta(@RequestBody Map<String, String> json,@PathVariable long id ) {
+		Oferta oferta = ofertaServicio.editarOferta(new Oferta(json.get("nombre"), json.get("prioridad")), id);
+		ResponseEntity<Object> ofert = new ResponseEntity<Object>(oferta, HttpStatus.OK);
+		return ofert;
 	}
 
 	@GetMapping("/buscarOferta")

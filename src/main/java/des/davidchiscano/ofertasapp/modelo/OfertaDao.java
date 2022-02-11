@@ -12,4 +12,5 @@ public interface OfertaDao extends DaoGenerico<Oferta>{
 	Optional<Oferta>buscarId(long id); 
 	List<Oferta> buscarOferta(String busqueda);
 	List<Oferta> filtrarOferta(String prioridad);
+	
 }
