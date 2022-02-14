@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import des.davidchiscano.ofertasapp.entidades.Oferta;
@@ -37,17 +36,15 @@ public class OfertaController {
 	
 	@ResponseBody
 	@PostMapping("/oferta/oferta{id}")
-	public ResponseEntity postEditarOferta(@RequestBody Map<String, String> json,@PathVariable long id ) {
+	public ResponseEntity<Object> postEditarOferta(@RequestBody Map<String, String> json,@PathVariable long id ) {
 		Oferta oferta = ofertaServicio.editarOferta(new Oferta(json.get("nombre"), json.get("prioridad")), id);
 		ResponseEntity<Object> ofert = new ResponseEntity<Object>(oferta, HttpStatus.OK);
 		return ofert;
 	}
 
-	@GetMapping("/buscarOferta")
-	public String getBuscarProducto(Model modelo, @RequestParam String busqueda) {
-		List<Oferta> ListaOfertas = ofertaDao.buscarOferta(busqueda);
-		modelo.addAttribute("ListaBusqueda", (ListaOfertas));
-		return "index";
+	@GetMapping("/buscarOferta{id}")
+	public Oferta getBuscarProducto(Model modelo, @PathVariable long id) {
+		return ofertaDao.buscar(id);
 	}
 
 	@GetMapping("/borrar/{id}")

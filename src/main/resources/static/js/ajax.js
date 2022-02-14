@@ -79,6 +79,8 @@ function mostrarOfertas() {
 
 //Mostrar MOdal
 $(document).on("click", "#info", function mostrarInfo() {
+		var tr = $(this).closest("tr");
+	var id = tr[0].childNodes[0].innerText;
 	$("#modal").modal("show");
 	$("#cerrar-modal").on("click", function() {
 		$("#modal").modal("toggle");
@@ -115,25 +117,32 @@ $(document).on("click", "#info", function mostrarInfo() {
 				prioTexto.setAttribute("id", "idPrio");
 				pPrio.appendChild(prioTexto);
 				modal.appendChild(pPrio);
-				
+
 				modal.appendChild(guardar);
 
-				$("#guardar").click(function(e) {
-					e.preventDefault();
+				guardar.addEventListener("click",function() {
 					fetch('/oferta/oferta' + id, {
 						headers: {
 							'Content-type': 'application/json'
 						},
 						method: 'POST',
-						body: JSON.stringify({nombre: $('#idNombre').val(), prioridad: $('#idPrio').val() })
+						body: JSON.stringify({ nombre: $('#idNombre').val(), prioridad: $('#idPrio').val() })
 					})
-					location.reload();
+					 .then(function(response) {
+                if(response.ok) {
+                    return response.json()
+                } else {
+                    throw "La oferta ya existe";
+                }
+
+            }).then(oferta => {
+					addOfertaTabla(oferta);
+					});
 				});
 			})
 	})
 
-	var tr = $(this).closest("tr");
-	var id = tr[0].childNodes[0].innerText;
+
 	fetch('/oferta/oferta' + id, { headers: { "Content-Type": "application/json; charset=utf-8" } })
 		.then(res => res.json()) // parse response as JSON (can be res.text() for plain response)
 		.then(oferta => {
@@ -155,6 +164,11 @@ $(document).on("click", "#info", function mostrarInfo() {
 		})
 }
 );
+
+//Editar Ofertas
+function editarOferta(oferta){
+	
+}
 
 //Filtrar Ofertas
 function filtrarOferta(e) {

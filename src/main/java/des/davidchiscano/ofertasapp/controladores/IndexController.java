@@ -30,12 +30,12 @@ public class IndexController {
 //		modelo.addAttribute("ListaOfertas",ListaOfertas);
 //		return "index";
 //	}
-//	@GetMapping("/")
-//	public String getIndex2(Model modelo) {
-//		List<Oferta>ListaOfertas = ofertaModelo.getOfertas();
-//		modelo.addAttribute("ListaOfertas",ListaOfertas);
-//		return "index";
-//	}
+	@GetMapping("/")
+	public String getIndex2(Model modelo) {
+		List<Oferta>ListaOfertas = ofertaModelo.getOfertas();
+		modelo.addAttribute("ListaOfertas",ListaOfertas);
+		return "index";
+	}
 	
 	@ResponseBody
 	@RequestMapping(method = RequestMethod.GET, value = "/ofertas")
