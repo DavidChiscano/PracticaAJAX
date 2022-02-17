@@ -74,12 +74,10 @@ function mostrarOfertas() {
 		})
 }
 
-//Editar ofertas
-
 
 //Mostrar MOdal
-$(document).on("click", "#info", function mostrarInfo() {
-		var tr = $(this).closest("tr");
+$(document).on("click","#info",  function mostrarInfo() {
+	var tr = $(this).closest("tr");
 	var id = tr[0].childNodes[0].innerText;
 	$("#modal").modal("show");
 	$("#cerrar-modal").on("click", function() {
@@ -94,21 +92,16 @@ $(document).on("click", "#info", function mostrarInfo() {
 			.then(oferta => {
 				let modal = document.getElementsByClassName("modal-body")[0];
 				modal.replaceChildren();
-				let guardar = document.createElement('INPUT');
-				guardar.setAttribute("type", "button");
-				guardar.setAttribute("id", "guardar");
-				guardar.setAttribute("class", "btn btn-primary");
-				guardar.setAttribute("value", "guardar");
-
-
+				
+				let guardar = crearElemento('INPUT', "button", "guardar", "btn btn-primary", "guardar");
+				let idOferta = oferta.id;
 				let pNombre = document.createElement('p');
 				pNombre.textContent = "Nombre: " + oferta.nombre;
-				var nombreTexto = document.createElement("INPUT");
+				var nombreTexto = document.createElement("input");
 				nombreTexto.setAttribute("type", "text");
 				nombreTexto.setAttribute("id", "idNombre");
 				pNombre.appendChild(nombreTexto);
 				modal.appendChild(pNombre);
-
 
 				let pPrio = document.createElement('p');
 				pPrio.textContent = "Prioridad: " + oferta.prioridad;
@@ -117,31 +110,11 @@ $(document).on("click", "#info", function mostrarInfo() {
 				prioTexto.setAttribute("id", "idPrio");
 				pPrio.appendChild(prioTexto);
 				modal.appendChild(pPrio);
-
 				modal.appendChild(guardar);
-
-				guardar.addEventListener("click",function() {
-					fetch('/oferta/oferta' + id, {
-						headers: {
-							'Content-type': 'application/json'
-						},
-						method: 'POST',
-						body: JSON.stringify({ nombre: $('#idNombre').val(), prioridad: $('#idPrio').val() })
-					})
-					 .then(function(response) {
-                if(response.ok) {
-                    return response.json()
-                } else {
-                    throw "La oferta ya existe";
-                }
-
-            }).then(oferta => {
-					addOfertaTabla(oferta);
-					});
-				});
+				$("#guardar").click(enviarEdicion(idOferta));
 			})
+		
 	})
-
 
 	fetch('/oferta/oferta' + id, { headers: { "Content-Type": "application/json; charset=utf-8" } })
 		.then(res => res.json()) // parse response as JSON (can be res.text() for plain response)
@@ -165,9 +138,70 @@ $(document).on("click", "#info", function mostrarInfo() {
 }
 );
 
+function enviarEdicion(id) {
+	fetch('/oferta/oferta' + id, {
+		headers: {
+			'Content-type': 'application/json'
+		},
+		method: 'POST',
+		body: JSON.stringify({ nombre: $('#idNombre').val(), prioridad: $('#idPrio').val() })
+	})
+		.then(function(response) {
+			if (response.ok) {
+				return response.json()
+			} else {
+				throw "La oferta ya existe";
+			}
+
+		}).then(oferta => {
+			editarOferta(id);
+		});
+};
+
+
+
+
 //Editar Ofertas
-function editarOferta(oferta){
-	
+function editarOferta(oferta) {
+	let listaOfertas = document.getElementById("listaOfertas");
+     
+
+	if (oferta.prioridad == "Baja") {
+		tr.setAttribute("class", "table-active");
+	} else if (oferta.prioridad == "Media") {
+		tr.setAttribute("class", "table-warning");
+	} else if (oferta.prioridad == "Alta") {
+		tr.setAttribute("class", "table-danger");
+	}
+
+	let tdNombre = document.createElement("td");
+	tdNombre.textContent = oferta.nombre;
+
+	let tdPrecio = document.createElement("td");
+	tdPrecio.textContent = oferta.precio;
+
+	let tdInfo = document.createElement("td");
+	let tdBorrar = document.createElement("td");
+
+	let btnInfo = document.createElement("input");
+	btnInfo.setAttribute("type", "button");
+	btnInfo.setAttribute("class", "btn btn-info");
+	btnInfo.setAttribute("id", "info");
+	btnInfo.setAttribute("value", "Info");
+
+	let btnBorrar = document.createElement("input");
+	btnBorrar.setAttribute("type", "button");
+	btnBorrar.setAttribute("class", "btn btn-danger");
+	btnBorrar.setAttribute("id", "borrar");
+	btnBorrar.setAttribute("value", "Borrar");
+
+	tr.appendChild(tdNombre);
+	tr.appendChild(tdPrecio);
+	tdInfo.appendChild(btnInfo);
+	tdBorrar.appendChild(btnBorrar);
+	tr.appendChild(tdInfo);
+	tr.appendChild(tdBorrar);
+	listaOfertas.appendChild(tr);
 }
 
 //Filtrar Ofertas
@@ -216,4 +250,18 @@ function crearOferta(e) {
 			})
 	}
 }
+
+
+
+function crearElemento (input, tipo, id, clase, valor){
+	let elemento = document.createElement(input);
+	elemento.setAttribute("type", tipo);
+	elemento.setAttribute("id", id);
+	elemento.setAttribute("class", clase);
+	elemento.setAttribute("value", valor);
+	return elemento;
+}
+
+
+
 
