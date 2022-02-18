@@ -6,6 +6,10 @@ function inicio() {
 	$("#filtrarPorPrioridad").click(filtrarOferta);
 }
 
+function limpiarForm(){
+$('#formulario').trigger("reset");
+}
+
 function addOfertaTabla(oferta) {
 	let listaOfertas = document.getElementById("listaOfertas");
 	let tr = document.createElement("tr");
@@ -20,8 +24,11 @@ function addOfertaTabla(oferta) {
 
 	let tdId = document.createElement("td");
 	tdId.textContent = oferta.id;
+	tdId.setAttribute("id", "id" + oferta.id);
 	let tdNombre = document.createElement("td");
 	tdNombre.textContent = oferta.nombre;
+	tdNombre.setAttribute("id", oferta.nombre);
+
 	let tdPrecio = document.createElement("td");
 	tdPrecio.textContent = oferta.precio;
 
@@ -72,18 +79,7 @@ $(document).on("click", "#borrar", function() {
 	fetch("/borrar/" + id, {
 		headers: { "Content-Type": "application/json; charset=utf-8" }
 	})
-		.then(function(response) {
-			if (response.ok) {
-				return response.json()
-			} else {
-				throw "Error";
-			}
-
-		}).then(res => {
-			$(this).closest("tr").remove();
-			mostrarOfertas();
-		});
-
+			tr.remove();
 });
 
 
@@ -113,6 +109,7 @@ $(document).on("click", "#info", function mostrarInfo() {
 
 				let pNombre = document.createElement('p');
 				pNombre.textContent = "Nombre: " + oferta.nombre;
+				pNombre.setAttribute("id", "nombre" + oferta.nombre);
 				var nombreTexto = document.createElement("INPUT");
 				nombreTexto.setAttribute("type", "text");
 				nombreTexto.setAttribute("id", "idNombre");
@@ -146,17 +143,20 @@ $(document).on("click", "#info", function mostrarInfo() {
 							}
 
 						}).then(oferta => {
-							var t = document.getElementById("tabla");
-							var trs = t.getElementsByTagName("tr");
-							var tds = null;
-							for (let i = 0; i < trs.length; i++) {
-								tds = trs[i].getElementsByTagName("td");
-								for (var n = 0; n < tds.length; n++) {
-									if(id == tds[n]){
-										tds[n]
-									}
-									tds[n].lick = foncunction() { alert(oferta); }
-								}
+							var td = document.getElementById('id' + oferta.id);
+
+							var tr = td.parentNode;
+
+							var tdNombre = tr.childNodes[1];
+
+							tdNombre.innerText = oferta.nombre;
+
+							if (oferta.prioridad == "Baja") {
+								tr.setAttribute("class", "table-active");
+							} else if (oferta.prioridad == "Media") {
+								tr.setAttribute("class", "table-warning");
+							} else if (oferta.prioridad == "Alta") {
+								tr.setAttribute("class", "table-danger");
 							}
 						});
 				});
@@ -186,10 +186,6 @@ $(document).on("click", "#info", function mostrarInfo() {
 }
 );
 
-//Editar Ofertas
-function editarOferta(id) {
-
-}
 
 //Filtrar Ofertas
 function filtrarOferta(e) {
@@ -234,6 +230,7 @@ function crearOferta(e) {
 				}
 			}).then(oferta => {
 				addOfertaTabla(oferta);
+				limpiarForm();
 			})
 	}
 }
